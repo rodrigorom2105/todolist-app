@@ -1,4 +1,4 @@
-const API = "http://localhost:3000/api/tasks";
+const API = "/api/tasks";
 
 const taskList = document.getElementById("task-list");
 const taskCount = document.getElementById("task-count");
@@ -19,7 +19,9 @@ function renderTasks(tasks) {
   const total = tasks.length;
   const done = tasks.filter((t) => t.completed).length;
   taskCount.textContent =
-    total === 0 ? "" : `${done} of ${total} task${total !== 1 ? "s" : ""} completed`;
+    total === 0
+      ? ""
+      : `${done} of ${total} task${total !== 1 ? "s" : ""} completed`;
 
   emptyMsg.classList.toggle("d-none", total > 0);
 
@@ -51,8 +53,12 @@ function buildCard(task) {
     <button class="btn-delete" title="Delete task">&#x2715;</button>
   `;
 
-  card.querySelector(".task-toggle").addEventListener("change", () => toggleTask(task.id));
-  card.querySelector(".btn-delete").addEventListener("click", () => deleteTask(task.id));
+  card
+    .querySelector(".task-toggle")
+    .addEventListener("change", () => toggleTask(task.id));
+  card
+    .querySelector(".btn-delete")
+    .addEventListener("click", () => deleteTask(task.id));
 
   return card;
 }
