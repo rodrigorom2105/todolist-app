@@ -1,7 +1,13 @@
 const mysql = require("mysql2/promise");
 
 async function initDatabase(config) {
-  const connection = await mysql.createConnection(config);
+  const connection = await mysql.createConnection({
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    port: config.port,
+    ssl: config.ssl,
+  });
 
   await connection.query(
     `CREATE DATABASE IF NOT EXISTS \`${config.database}\``,
@@ -9,7 +15,7 @@ async function initDatabase(config) {
   await connection.query(`USE \`${config.database}\``);
 
   await connection.query(`
-        CREATE TABLE tasks(  
+        CREATE TABLE IF NOT EXISTS tasks(  
         id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
         title VARCHAR(255) NOT NULL,
         description VARCHAR(255),

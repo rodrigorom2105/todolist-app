@@ -16,6 +16,7 @@ const dbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   port: process.env.DB_PORT || 3306,
   ssl: {
     rejectUnauthorized: false,
@@ -28,6 +29,15 @@ async function startApp() {
 
   app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });
+  });
+
+  app.get("/api/tasks", async (req, res) => {
+    try {
+      const [rows] = await pool.query("SELECT * FROM tasks");
+      res.status(200).json(rows);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   });
 
   app.listen(PORT, () => {
