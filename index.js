@@ -40,6 +40,61 @@ async function startApp() {
     }
   });
 
+  app.post("/api/tasks", async (req, res) => {
+    const { title, description, due_date } = req.body || {};
+
+    if (!title) {
+      return res.status(400).json({ error: "Title is required" });
+    }
+
+    pool
+      .query(
+        "INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)",
+        [title, description, due_date],
+      )
+      .then(([result]) => {
+        res.status(201).json({
+          message: "Task created successfully",
+          taskId: result.insertId,
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({ error: error.message });
+      });
+  });
+
+  app.delete("/api/tasks/:id", async (req, res) => {
+    const { id } = req.params;
+
+    pool
+      .query("DELETE FROM tasks WHERE id = ?", [id])
+      .then(([result]) => {
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: "Task not found" });
+        }
+        res.status(200).json({ message: "Task deleted successfully" });
+      })
+      .catch((error) => {
+        res.status(500).json({ error: error.message });
+      });
+  });
+
+  app.patch("/api/tasks/:id/toggle", async (req, res) => {
+    const { id } = req.params;
+
+    pool
+      .query("UPDATE tasks SET completed = NOT completed WHERE id = ?", [id])
+      .then(([result]) => {
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: "Task not found" });
+        }
+        res.status(200).json({ message: "Task updated successfully" });
+      })
+      .catch((error) => {
+        res.status(500).json({ error: error.message });
+      });
+  });
+
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
